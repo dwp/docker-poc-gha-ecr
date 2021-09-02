@@ -59,6 +59,7 @@ jobs:
         - -exc
         - |
           cp ../terraform-bootstrap/terraform.tf .
+          source scripts/get_ecr_sts_credentials.sh
           terraform workspace show
           terraform init
           terraform plan -out terraform.plan
@@ -144,6 +145,7 @@ jobs:
         - -exc
         - |
           cp ../terraform-bootstrap/terraform.tf .
+          source scripts/get_ecr_sts_credentials.sh
           terraform workspace show
           terraform init
           terraform plan -out terraform.plan
@@ -306,7 +308,7 @@ resources:
   name: docker-poc-gha-ecr
   source:
     access_token: ((dataworks-secrets.concourse_github_pat))
-    branch: master
+    branch: poc-gha-docker-ecr-builds
     uri: https://github.com/dwp/docker-poc-gha-ecr.git
   type: git
   webhook_token: ((dataworks.concourse_github_webhook_token))

@@ -56,7 +56,6 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
-              source scripts/get_ecr_sts_credentials.sh
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
