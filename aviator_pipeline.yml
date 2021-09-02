@@ -1,0 +1,333 @@
+groups:
+- jobs:
+  - management-dev
+  - management
+  name: master
+- jobs:
+  - docker-poc-gha-ecr-pr
+  name: pull-request
+- jobs:
+  - mirror-dwpdigital-docker-poc-gha-ecr-dev
+  - mirror-dwpdigital-docker-poc-gha-ecr
+  name: mirror
+jobs:
+- max_in_flight: 1
+  name: management-dev
+  plan:
+  - get: docker-poc-gha-ecr
+    trigger: true
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.docker_awscli_repository))
+          tag: ((dataworks.docker_awscli_version))
+          version: ((dataworks.docker_awscli_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      outputs:
+      - name: terraform-bootstrap
+      params:
+        AWS_REGION: ((dataworks.aws_region))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          python bootstrap_terraform.py
+          cp terraform.tf ../terraform-bootstrap
+        dir: docker-poc-gha-ecr
+        path: sh
+    task: terraform-bootstrap
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.terraform_repository))
+          tag: ((dataworks.terraform_13_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      - name: terraform-bootstrap
+      params:
+        TF_CLI_ARGS_apply: -lock-timeout=300s
+        TF_CLI_ARGS_plan: -lock-timeout=300s
+        TF_INPUT: false
+        TF_VAR_costcode: ((dataworks.costcode))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          cp ../terraform-bootstrap/terraform.tf .
+          terraform workspace show
+          terraform init
+          terraform plan -out terraform.plan
+          terraform apply -auto-approve terraform.plan
+        dir: docker-poc-gha-ecr
+        path: sh
+    task: terraform-apply
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.terraform_repository))
+          tag: ((dataworks.terraform_13_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      - name: terraform-bootstrap
+      params:
+        TF_CLI_ARGS_apply: -lock-timeout=300s
+        TF_CLI_ARGS_plan: -lock-timeout=300s
+        TF_INPUT: false
+        TF_VAR_costcode: ((dataworks.costcode))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          cp ../terraform-bootstrap/terraform.tf .
+          terraform workspace show
+          terraform init
+          terraform plan $DETAILED_EXITCODE
+        dir: docker-poc-gha-ecr
+        path: sh
+    params:
+      DETAILED_EXITCODE: -detailed-exitcode
+    task: terraform-plan
+- max_in_flight: 1
+  name: management
+  plan:
+  - get: docker-poc-gha-ecr
+    passed:
+    - management-dev
+    trigger: true
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.docker_awscli_repository))
+          tag: ((dataworks.docker_awscli_version))
+          version: ((dataworks.docker_awscli_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      outputs:
+      - name: terraform-bootstrap
+      params:
+        AWS_REGION: ((dataworks.aws_region))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          python bootstrap_terraform.py
+          cp terraform.tf ../terraform-bootstrap
+        dir: docker-poc-gha-ecr
+        path: sh
+    task: terraform-bootstrap
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.terraform_repository))
+          tag: ((dataworks.terraform_13_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      - name: terraform-bootstrap
+      params:
+        TF_CLI_ARGS_apply: -lock-timeout=300s
+        TF_CLI_ARGS_plan: -lock-timeout=300s
+        TF_INPUT: false
+        TF_VAR_costcode: ((dataworks.costcode))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          cp ../terraform-bootstrap/terraform.tf .
+          terraform workspace show
+          terraform init
+          terraform plan -out terraform.plan
+          terraform apply -auto-approve terraform.plan
+        dir: docker-poc-gha-ecr
+        path: sh
+    params:
+      TF_WORKSPACE: management
+    task: terraform-apply
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.terraform_repository))
+          tag: ((dataworks.terraform_13_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      - name: terraform-bootstrap
+      params:
+        TF_CLI_ARGS_apply: -lock-timeout=300s
+        TF_CLI_ARGS_plan: -lock-timeout=300s
+        TF_INPUT: false
+        TF_VAR_costcode: ((dataworks.costcode))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          cp ../terraform-bootstrap/terraform.tf .
+          terraform workspace show
+          terraform init
+          terraform plan $DETAILED_EXITCODE
+        dir: docker-poc-gha-ecr
+        path: sh
+    params:
+      DETAILED_EXITCODE: -detailed-exitcode
+      TF_WORKSPACE: management
+    task: terraform-plan
+- name: mirror-dwpdigital-docker-poc-gha-ecr-dev
+  plan:
+  - attempts: 3
+    get: dwpdigital-docker-poc-gha-ecr
+    params:
+      format: oci
+    trigger: true
+  - attempts: 3
+    params:
+      image: dwpdigital-docker-poc-gha-ecr/image.tar
+    put: ecr-dwpdigital-docker-poc-gha-ecr-dev
+  serial_groups:
+  - docker-poc-gha-ecr
+- name: mirror-dwpdigital-docker-poc-gha-ecr
+  plan:
+  - attempts: 3
+    get: dwpdigital-docker-poc-gha-ecr
+    params:
+      format: oci
+    trigger: true
+  - attempts: 3
+    params:
+      image: dwpdigital-docker-poc-gha-ecr/image.tar
+    put: ecr-dwpdigital-docker-poc-gha-ecr
+  serial_groups:
+  - docker-poc-gha-ecr
+- name: docker-poc-gha-ecr-pr
+  plan:
+  - get: docker-poc-gha-ecr-pr
+    trigger: true
+    version: every
+  - params:
+      path: docker-poc-gha-ecr-pr
+      status: pending
+    put: docker-poc-gha-ecr-pr
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.docker_awscli_repository))
+          tag: ((dataworks.docker_awscli_version))
+          version: ((dataworks.docker_awscli_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      outputs:
+      - name: terraform-bootstrap
+      params:
+        AWS_REGION: ((dataworks.aws_region))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          python bootstrap_terraform.py
+          cp terraform.tf ../terraform-bootstrap
+        dir: docker-poc-gha-ecr
+        path: sh
+    input_mapping:
+      docker-poc-gha-ecr: docker-poc-gha-ecr-pr
+    task: terraform-bootstrap
+  - config:
+      image_resource:
+        source:
+          repository: ((dataworks.terraform_repository))
+          tag: ((dataworks.terraform_13_version))
+        type: docker-image
+      inputs:
+      - name: docker-poc-gha-ecr
+      - name: terraform-bootstrap
+      params:
+        TF_CLI_ARGS_apply: -lock-timeout=300s
+        TF_CLI_ARGS_plan: -lock-timeout=300s
+        TF_INPUT: false
+        TF_VAR_costcode: ((dataworks.costcode))
+      platform: linux
+      run:
+        args:
+        - -exc
+        - |
+          cp ../terraform-bootstrap/terraform.tf .
+          terraform workspace show
+          terraform init
+          terraform plan $DETAILED_EXITCODE
+        dir: docker-poc-gha-ecr
+        path: sh
+    input_mapping:
+      docker-poc-gha-ecr: docker-poc-gha-ecr-pr
+    on_failure:
+      params:
+        path: docker-poc-gha-ecr-pr
+        status: failure
+      put: docker-poc-gha-ecr-pr
+    on_success:
+      params:
+        path: docker-poc-gha-ecr-pr
+        status: success
+      put: docker-poc-gha-ecr-pr
+    params:
+      DETAILED_EXITCODE: ""
+      TF_WORKSPACE: management
+    task: terraform-plan
+resource_types:
+- name: pull-request
+  source:
+    repository: teliaoss/github-pr-resource
+    tag: latest
+  type: docker-image
+- name: registry-image-resource
+  source:
+    repository: dwpdigital/registry-image-resource
+    tag: latest
+  type: docker-image
+resources:
+- check_every: 720h
+  name: docker-poc-gha-ecr-pr
+  source:
+    access_token: ((dataworks-secrets.concourse_github_pat))
+    repository: dwp/docker-poc-gha-ecr
+  type: pull-request
+  webhook_token: ((dataworks.concourse_github_webhook_token))
+- check_every: 720h
+  name: docker-poc-gha-ecr
+  source:
+    access_token: ((dataworks-secrets.concourse_github_pat))
+    branch: master
+    uri: https://github.com/dwp/docker-poc-gha-ecr.git
+  type: git
+  webhook_token: ((dataworks.concourse_github_webhook_token))
+- check_every: 5m
+  name: dwpdigital-docker-poc-gha-ecr
+  source:
+    repository: dwpdigital/docker-poc-gha-ecr
+  type: registry-image-resource
+- name: ecr-dwpdigital-docker-poc-gha-ecr-dev
+  source:
+    aws_access_key_id: ((dataworks-secrets.ci_aws_access_key_id))
+    aws_region: ((dataworks.aws_region))
+    aws_role_arn: arn:aws:iam::((dataworks.aws_management_dev_acc)):role/ci
+    aws_secret_access_key: ((dataworks-secrets.ci_aws_secret_access_key))
+    repository: docker-poc-gha-ecr
+  type: registry-image-resource
+- name: ecr-dwpdigital-docker-poc-gha-ecr
+  source:
+    aws_access_key_id: ((dataworks-secrets.ci_aws_access_key_id))
+    aws_region: ((dataworks.aws_region))
+    aws_role_arn: arn:aws:iam::((dataworks.aws_management_acc)):role/ci
+    aws_secret_access_key: ((dataworks-secrets.ci_aws_secret_access_key))
+    repository: docker-poc-gha-ecr
+  type: registry-image-resource

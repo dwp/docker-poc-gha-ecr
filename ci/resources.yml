@@ -10,7 +10,7 @@ resources:
   - name: docker-poc-gha-ecr
     type: git
     source:
-      branch: master
+      branch: poc-gha-docker-ecr-builds
       uri: https://github.com/dwp/docker-poc-gha-ecr.git
       access_token: ((dataworks-secrets.concourse_github_pat))
     webhook_token: ((dataworks.concourse_github_webhook_token))
