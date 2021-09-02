@@ -3,6 +3,7 @@ groups:
     jobs:
       - management-dev
       - management
+      - gha-sts-secrets
   - name: pull-request
     jobs:
       - docker-poc-gha-ecr-pr

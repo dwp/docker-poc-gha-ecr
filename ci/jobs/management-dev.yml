@@ -5,5 +5,11 @@ jobs:
       - get: docker-poc-gha-ecr
         trigger: true
       - .: (( inject meta.plan.terraform-bootstrap ))
+        params:
+          TF_DIR: "ecr"
       - .: (( inject meta.plan.terraform-apply ))
+        params:
+          TF_DIR: "ecr"
       - .: (( inject meta.plan.terraform-plan ))
+        params:
+          TF_DIR: "ecr"

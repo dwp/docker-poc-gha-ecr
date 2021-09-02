@@ -39,9 +39,10 @@ meta:
           args:
             - -exc
             - |
+              cd "$TF_DIR"
               python bootstrap_terraform.py
               cp terraform.tf ../../terraform-bootstrap
-          dir: docker-poc-gha-ecr/ecr
+          dir: docker-poc-gha-ecr
         inputs:
           - name: docker-poc-gha-ecr
         outputs:
@@ -55,12 +56,13 @@ meta:
           args:
             - -exc
             - |
+              cd "$TF_DIR"
               cp ../../terraform-bootstrap/terraform.tf .
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
               terraform apply -auto-approve terraform.plan
-          dir: docker-poc-gha-ecr/ecr
+          dir: docker-poc-gha-ecr
         inputs:
           - name: docker-poc-gha-ecr
           - name: terraform-bootstrap
@@ -73,11 +75,12 @@ meta:
           args:
             - -exc
             - |
+              cd "$TF_DIR"
               cp ../../terraform-bootstrap/terraform.tf .
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE
-          dir: docker-poc-gha-ecr/ecr
+          dir: docker-poc-gha-ecr
         inputs:
           - name: docker-poc-gha-ecr
           - name: terraform-bootstrap

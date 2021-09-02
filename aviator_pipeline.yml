@@ -2,6 +2,7 @@ groups:
 - jobs:
   - management-dev
   - management
+  - gha-sts-secrets
   name: master
 - jobs:
   - docker-poc-gha-ecr-pr
@@ -34,10 +35,13 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           python bootstrap_terraform.py
           cp terraform.tf ../../terraform-bootstrap
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
+    params:
+      TF_DIR: ecr
     task: terraform-bootstrap
   - config:
       image_resource:
@@ -58,13 +62,16 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan -out terraform.plan
           terraform apply -auto-approve terraform.plan
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
+    params:
+      TF_DIR: ecr
     task: terraform-apply
   - config:
       image_resource:
@@ -85,14 +92,16 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan $DETAILED_EXITCODE
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
     params:
       DETAILED_EXITCODE: -detailed-exitcode
+      TF_DIR: ecr
     task: terraform-plan
 - max_in_flight: 1
   name: management
@@ -119,10 +128,13 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           python bootstrap_terraform.py
           cp terraform.tf ../../terraform-bootstrap
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
+    params:
+      TF_DIR: ecr
     task: terraform-bootstrap
   - config:
       image_resource:
@@ -143,14 +155,16 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan -out terraform.plan
           terraform apply -auto-approve terraform.plan
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
     params:
+      TF_DIR: ecr
       TF_WORKSPACE: management
     task: terraform-apply
   - config:
@@ -172,14 +186,16 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan $DETAILED_EXITCODE
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
     params:
       DETAILED_EXITCODE: -detailed-exitcode
+      TF_DIR: ecr
       TF_WORKSPACE: management
     task: terraform-plan
 - name: mirror-dwpdigital-docker-poc-gha-ecr-dev
@@ -235,9 +251,10 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           python bootstrap_terraform.py
           cp terraform.tf ../../terraform-bootstrap
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
     input_mapping:
       docker-poc-gha-ecr: docker-poc-gha-ecr-pr
@@ -261,11 +278,12 @@ jobs:
         args:
         - -exc
         - |
+          cd "$TF_DIR"
           cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan $DETAILED_EXITCODE
-        dir: docker-poc-gha-ecr/ecr
+        dir: docker-poc-gha-ecr
         path: sh
     input_mapping:
       docker-poc-gha-ecr: docker-poc-gha-ecr-pr
