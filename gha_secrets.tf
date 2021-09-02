@@ -1,7 +1,4 @@
-locals {
-
-  dev_gha_role_arn = "arn:aws:iam::${lookup(local.account, "management-dev")}:role/gha_ecr"
-povider "github" {
+provider "github" {
   token        = var.github_token
   organization = var.github_organization
   version      = "~> 2.6.1"
