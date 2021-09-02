@@ -40,7 +40,7 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
-              cp terraform.tf ../terraform-bootstrap
+              cp terraform.tf ../../terraform-bootstrap
           dir: docker-poc-gha-ecr/ecr
         inputs:
           - name: docker-poc-gha-ecr
@@ -55,7 +55,7 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
+              cp ../../terraform-bootstrap/terraform.tf .
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -73,7 +73,7 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
+              cp ../../terraform-bootstrap/terraform.tf .
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE

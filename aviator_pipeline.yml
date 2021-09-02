@@ -35,7 +35,7 @@ jobs:
         - -exc
         - |
           python bootstrap_terraform.py
-          cp terraform.tf ../terraform-bootstrap
+          cp terraform.tf ../../terraform-bootstrap
         dir: docker-poc-gha-ecr/ecr
         path: sh
     task: terraform-bootstrap
@@ -58,7 +58,7 @@ jobs:
         args:
         - -exc
         - |
-          cp ../terraform-bootstrap/terraform.tf .
+          cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan -out terraform.plan
@@ -85,7 +85,7 @@ jobs:
         args:
         - -exc
         - |
-          cp ../terraform-bootstrap/terraform.tf .
+          cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan $DETAILED_EXITCODE
@@ -120,7 +120,7 @@ jobs:
         - -exc
         - |
           python bootstrap_terraform.py
-          cp terraform.tf ../terraform-bootstrap
+          cp terraform.tf ../../terraform-bootstrap
         dir: docker-poc-gha-ecr/ecr
         path: sh
     task: terraform-bootstrap
@@ -143,7 +143,7 @@ jobs:
         args:
         - -exc
         - |
-          cp ../terraform-bootstrap/terraform.tf .
+          cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan -out terraform.plan
@@ -172,7 +172,7 @@ jobs:
         args:
         - -exc
         - |
-          cp ../terraform-bootstrap/terraform.tf .
+          cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan $DETAILED_EXITCODE
@@ -236,7 +236,7 @@ jobs:
         - -exc
         - |
           python bootstrap_terraform.py
-          cp terraform.tf ../terraform-bootstrap
+          cp terraform.tf ../../terraform-bootstrap
         dir: docker-poc-gha-ecr/ecr
         path: sh
     input_mapping:
@@ -261,7 +261,7 @@ jobs:
         args:
         - -exc
         - |
-          cp ../terraform-bootstrap/terraform.tf .
+          cp ../../terraform-bootstrap/terraform.tf .
           terraform workspace show
           terraform init
           terraform plan $DETAILED_EXITCODE
