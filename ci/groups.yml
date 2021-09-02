@@ -5,8 +5,8 @@ groups:
       - management
   - name: pull-request
     jobs:
-      - dataworks-repo-template-docker-pr
+      - docker-poc-gha-ecr-pr
   - name: mirror
     jobs:
-      - mirror-dwpdigital-dataworks-repo-template-docker-dev
-      - mirror-dwpdigital-dataworks-repo-template-docker
+      - mirror-dwpdigital-docker-poc-gha-ecr-dev
+      - mirror-dwpdigital-docker-poc-gha-ecr

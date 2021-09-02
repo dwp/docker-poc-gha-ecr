@@ -1,29 +1,29 @@
 jobs:
-  - name: dataworks-repo-template-docker-pr
+  - name: docker-poc-gha-ecr-pr
     plan:
-      - get: dataworks-repo-template-docker-pr
+      - get: docker-poc-gha-ecr-pr
         trigger: true
         version: every
-      - put: dataworks-repo-template-docker-pr
+      - put: docker-poc-gha-ecr-pr
         params:
-          path: dataworks-repo-template-docker-pr
+          path: docker-poc-gha-ecr-pr
           status: pending
       - .: (( inject meta.plan.terraform-bootstrap ))
         input_mapping:
-          dataworks-repo-template-docker: dataworks-repo-template-docker-pr
+          docker-poc-gha-ecr: docker-poc-gha-ecr-pr
       - .: (( inject meta.plan.terraform-plan ))
         input_mapping:
-          dataworks-repo-template-docker: dataworks-repo-template-docker-pr
+          docker-poc-gha-ecr: docker-poc-gha-ecr-pr
         params:
           TF_WORKSPACE: "management"
           DETAILED_EXITCODE: ""
         on_failure:
-          put: dataworks-repo-template-docker-pr
+          put: docker-poc-gha-ecr-pr
           params:
-            path: dataworks-repo-template-docker-pr
+            path: docker-poc-gha-ecr-pr
             status: failure
         on_success:
-          put: dataworks-repo-template-docker-pr
+          put: docker-poc-gha-ecr-pr
           params:
-            path: dataworks-repo-template-docker-pr
+            path: docker-poc-gha-ecr-pr
             status: success
