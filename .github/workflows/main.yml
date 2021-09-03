@@ -77,8 +77,11 @@ jobs:
           SEM_VER: "${{ needs.get-publish-version.outputs.publish-version }}"
         run:
            docker build -t $IMAGE_NAME .
+
            export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_REGION
+
            REG_URL="$(aws sts get-caller-identity | jq -r .Account).dkr.ecr.${AWS_REGION}.amazonaws.com"
+
            aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REG_URL"
 
            for TAG in "latest" "$SEM_VER" ; do docker tag "$REG_URL:$TAG" $IMAGE_NAME ; docker push "$REG_URL:$TAG" ; done
