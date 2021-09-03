@@ -40,7 +40,7 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
-              cp terraform.tf ../terraform-bootstrap
+              cp terraform.tf accounts.json ../terraform-bootstrap
           dir: docker-poc-gha-ecr
         inputs:
           - name: docker-poc-gha-ecr
@@ -64,7 +64,7 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/accounts.json .
               ./get_ecr_sts_credentials.sh 
               cp gha_ecr_sts_creds ../gha_ecr_sts_creds
           dir: docker-poc-gha-ecr
