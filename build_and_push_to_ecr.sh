@@ -15,7 +15,7 @@ aws ecr get-login-password --region "$AWS_REGION" | \
 docker login --username AWS --password-stdin "$DEV_REG_URL"
 
 for TAG in "latest" "$SEM_VER" ; do 
-  docker tag "$IMAGE_NAME" "$DEV_REG_URL:$TAG"
+  docker tag "$IMAGE_NAME" "$DEV_REG_URL/$IMAGE_NAME:$TAG"
   docker push "$DEV_REG_URL:$TAG" | sed "s/$DEV_AWS_ACCOUNT/XXXXXXXX/"
 done
 
@@ -26,7 +26,7 @@ aws ecr get-login-password --region "$AWS_REGION" | \
 docker login --username AWS --password-stdin "$REG_URL"
 
 for TAG in "latest" "$SEM_VER" ; do
-  docker tag "$IMAGE_NAME" "$REG_URL:$TAG"
+  docker tag "$IMAGE_NAME" "$REG_URL/$IMAGE_NAME:$TAG"
   docker push "$REG_URL:$TAG" | sed "s/$AWS_ACCOUNT/XXXXXXXX/"
 done
 
