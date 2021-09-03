@@ -20,24 +20,6 @@ variable "github_organization" {
   default     = "dwp"
 }
 
-variable "github_token" {
-  type        = string
-  description = "GitHub personal access token for managing repos and committing code"
-  default     = ""
-}
-
-variable "github_email" {
-  type        = string
-  description = "GitHub Email Address for committing code"
-  default     = ""
-}
-
-variable "github_username" {
-  type        = string
-  description = "GitHub Username for committing code"
-  default     = ""
-}
-
 variable "dev_gha_ecr_sts_creds" {
   type        = object({
       access_key_id = string
