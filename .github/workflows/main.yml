@@ -74,7 +74,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_ECR_TEMP_SECRET_ACCESS_KEY}}
           AWS_SESSION_TOKEN: ${{ secrets.DEV_AWS_ECR_TEMP_SESSION_TOKEN }}
           AWS_REGION: eu-west-2
-        with:
           TAGS: "latest, ${{ needs.get-publish-version.outputs.publish-version }}"
         run:
            docker build -t $IMAGE_NAME .
