@@ -20,6 +20,10 @@ variable "github_organization" {
   default     = "dwp"
 }
 
+variable "github_token" {
+  type        = string
+}
+
 variable "dev_gha_ecr_sts_creds" {
   type        = object({
       access_key_id = string
