@@ -46,6 +46,34 @@ meta:
           - name: docker-poc-gha-ecr
         outputs:
           - name: terraform-bootstrap
+
+    get-gha-ecr-creds:
+      task: get-gha-ecr-creds
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            version: ((dataworks.docker_awscli_version))
+            tag: ((dataworks.docker_awscli_version))
+        params:
+          AWS_REGION: ((dataworks.aws_region))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cp ../terraform-bootstrap/terraform.tf .
+              ./get_ecr_sts_credentials.sh 
+              cp gha_ecr_sts_creds ../gha_ecr_sts_creds
+          dir: docker-poc-gha-ecr
+        inputs:
+          - name: docker-poc-gha-ecr
+          - name: terraform-bootstrap
+        outputs:
+          - name: gha_ecr_sts_creds
+
     terraform-apply:
       task: terraform-apply
       .: (( inject meta.plan.terraform-common-config ))
@@ -56,6 +84,10 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
+              echo "Loading STS creds with shell debug disabled"
+              set +x
+              source ../gha_ecr_sts_creds/gha_ecr_sts_creds
+              set -x
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -64,6 +96,9 @@ meta:
         inputs:
           - name: docker-poc-gha-ecr
           - name: terraform-bootstrap
+          - name: gha_ecr_sts_creds
+        params:
+          TF_VAR_github_token: ((dataworks-secrets.concourse_github_pat))
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
@@ -74,6 +109,10 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
+              echo "Loading STS creds with shell debug disabled"
+              set +x
+              source ../gha_ecr_sts_creds/gha_ecr_sts_creds
+              set -x
               terraform workspace show
               terraform init
               terraform plan $DETAILED_EXITCODE
@@ -81,5 +120,7 @@ meta:
         inputs:
           - name: docker-poc-gha-ecr
           - name: terraform-bootstrap
+          - name: gha_ecr_sts_creds
       params:
         DETAILED_EXITCODE: -detailed-exitcode
+        TF_VAR_github_token: ((dataworks-secrets.concourse_github_pat))

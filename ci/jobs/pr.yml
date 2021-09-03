@@ -11,6 +11,9 @@ jobs:
       - .: (( inject meta.plan.terraform-bootstrap ))
         input_mapping:
           docker-poc-gha-ecr: docker-poc-gha-ecr-pr
+      - .: (( inject meta.plan.get-gha-ecr-creds ))
+        input_mapping:
+          docker-poc-gha-ecr: docker-poc-gha-ecr-pr
       - .: (( inject meta.plan.terraform-plan ))
         input_mapping:
           docker-poc-gha-ecr: docker-poc-gha-ecr-pr
