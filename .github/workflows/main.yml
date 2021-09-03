@@ -84,5 +84,5 @@ jobs:
 
            aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REG_URL"
 
-           for TAG in "latest" "$SEM_VER" ; do docker tag "$REG_URL:$TAG" $IMAGE_NAME ; docker push "$REG_URL:$TAG" ; done
+           for TAG in "latest" "$SEM_VER" ; do docker tag "$IMAGE_NAME" "$REG_URL:$TAG" ; docker push "$REG_URL:$TAG" ; done
 
