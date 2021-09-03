@@ -68,6 +68,17 @@ jobs:
       - name: Get release version
         id: get_version
         run: echo RELEASE_VERSION=$(echo ${GITHUB_REF:10}) >> $GITHUB_ENV
-      - run:
+      - name: Build Docker Image
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.dev_ecr_temp_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.dev_ecr_temp_secret_access_key}}
+          AWS_SESSION_TOKEN: ${{ secrets.dev_ecr_temp_session_token }}
+        run:
            docker build -t $IMAGE_NAME .
+
+           ACCOUNT="$(aws --profile dataworks-management-dev sts get-caller-identity | jq -r .Account)"
+ 
+           #aws ecr get-login-password --region region | \
+           #docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
+           #docker tag -t $AWS_URL:
 
