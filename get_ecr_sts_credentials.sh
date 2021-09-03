@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+#No debug printing!
+set +x
+
 DURATION="${ASSUME_DURATION:=900}"
 MGMT_ACCOUNT="$(cat terraform.tf | grep -i "configured for .* account" | sed 's/.*[^0-9]//')"
 ROLE_ARN="arn:aws:iam::$MGMT_ACCOUNT:role/gha_ecr"
