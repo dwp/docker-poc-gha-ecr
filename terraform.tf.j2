@@ -68,8 +68,8 @@ locals {
 
 {%- if terraform.dataworks_mgmt_env == "management" %}
 provider "github" {
-  token        = "{{github_token}}"
-  organization = "{{github_organization}}"
+  token        = var.github_token
+  organization = var.github_organization
   version      = "~> 2.6.1"
 }{%- endif %}
 
