@@ -38,3 +38,10 @@ variable "github_username" {
   default     = ""
 }
 
+variable "dev_gha_ecr_sts_creds" {
+  type        = object({
+      access_key_id = string
+      secret_access_key = string
+      session_token = string
+  })
+}

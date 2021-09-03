@@ -7,6 +7,7 @@ jobs:
         passed:
           - management-dev
       - .: (( inject meta.plan.terraform-bootstrap ))
+      - .: (( inject meta.plan.get-gha-ecr-creds ))
       - .: (( inject meta.plan.terraform-apply ))
         params:
           TF_WORKSPACE: "management"
