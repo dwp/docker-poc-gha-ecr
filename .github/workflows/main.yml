@@ -81,6 +81,6 @@ jobs:
            REG_URL="$(aws sts get-caller-identity | jq -r .Account).dkr.ecr.${AWS_REGION}.amazonaws.com"
 
            aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REG_URL"
-           docker tag -t "$REG_URL:latest" $IMAGE_NAME
+           docker tag "$REG_URL:latest" $IMAGE_NAME
            docker push "$REG_URL:latest"
 
