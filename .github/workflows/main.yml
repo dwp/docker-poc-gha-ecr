@@ -77,7 +77,7 @@ jobs:
           DEV_AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ECR_TEMP_ACCESS_KEY_ID }}
           DEV_AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_ECR_TEMP_SECRET_ACCESS_KEY}}
           DEV_AWS_SESSION_TOKEN: ${{ secrets.DEV_AWS_ECR_TEMP_SESSION_TOKEN }}
-          DEV_AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+          DEV_AWS_ACCOUNT: ${{ secrets.DEV_AWS_ACCOUNT }}
           AWS_REGION: eu-west-2
           SEM_VER: "${{ needs.get-publish-version.outputs.publish-version }}"
         run: ./build_and_push_to_ecr.sh
