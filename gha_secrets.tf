@@ -31,7 +31,7 @@ resource "github_actions_secret" "ecr_temp_access_key_id" {
   count		  = terraform.workspace == "management" ? 1 : 0
   repository      = local.name
   secret_name     = "AWS_ECR_TEMP_ACCESS_KEY_ID"
-  plaintext_value = var.dev_gha_ecr_sts_creds.access_key_id
+  plaintext_value = var.gha_ecr_sts_creds.access_key_id
 }
 
 resource "github_actions_secret" "ecr_temp_access_secret_key" {
