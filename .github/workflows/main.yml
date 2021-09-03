@@ -70,9 +70,9 @@ jobs:
         run: echo RELEASE_VERSION=$(echo ${GITHUB_REF:10}) >> $GITHUB_ENV
       - name: Build Docker Image
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.dev_ecr_temp_access_key_id }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.dev_ecr_temp_secret_access_key}}
-          AWS_SESSION_TOKEN: ${{ secrets.dev_ecr_temp_session_token }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_ECR_TEMP_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_ECR_TEMP_SECRET_ACCESS_KEY}}
+          AWS_SESSION_TOKEN: ${{ secrets.DEV_ECR_TEMP_SESSION_TOKEN }}
           AWS_REGION: eu-west-2
         run:
 
