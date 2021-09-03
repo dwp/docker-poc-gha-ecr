@@ -80,4 +80,4 @@ jobs:
           DEV_AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
           AWS_REGION: eu-west-2
           SEM_VER: "${{ needs.get-publish-version.outputs.publish-version }}"
-        run: ./push_to_ecr.sh
+        run: ./build_and_push_to_ecr.sh

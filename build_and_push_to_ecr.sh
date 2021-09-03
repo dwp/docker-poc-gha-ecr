@@ -3,6 +3,7 @@
 set -euo pipefail
 
 # Build the image
+cd build
 docker build -t "$IMAGE_NAME" .
 
 # Setup AWS credentials  and URLs etc
