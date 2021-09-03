@@ -74,6 +74,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_ECR_TEMP_SECRET_ACCESS_KEY}}
           AWS_SESSION_TOKEN: ${{ secrets.DEV_AWS_ECR_TEMP_SESSION_TOKEN }}
           AWS_REGION: eu-west-2
+        with:
+          TAGS: "latest, ${{ needs.get-publish-version.outputs.publish-version }}"
         run:
            docker build -t $IMAGE_NAME .
  
@@ -81,6 +83,9 @@ jobs:
            REG_URL="$(aws sts get-caller-identity | jq -r .Account).dkr.ecr.${AWS_REGION}.amazonaws.com"
 
            aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$REG_URL"
-           docker tag "$REG_URL:latest" $IMAGE_NAME
-           docker push "$REG_URL:latest"
+
+           for TAG in $TAGS ; do
+             docker tag "$REG_URL:$TAG" $IMAGE_NAME
+             docker push "$REG_URL:$TAG"
+           done
 
