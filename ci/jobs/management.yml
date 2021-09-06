@@ -14,3 +14,4 @@ jobs:
       - .: (( inject meta.plan.terraform-plan ))
         params:
           TF_WORKSPACE: "management"
+      - .: (( inject meta.plan.trigger-gha-workflow ))
