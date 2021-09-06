@@ -6,7 +6,3 @@ groups:
   - name: pull-request
     jobs:
       - docker-poc-gha-ecr-pr
-  - name: mirror
-    jobs:
-      - mirror-dwpdigital-docker-poc-gha-ecr-dev
-      - mirror-dwpdigital-docker-poc-gha-ecr
