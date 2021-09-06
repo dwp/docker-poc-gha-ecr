@@ -50,7 +50,7 @@ def main():
         template = jinja2.Template(in_template.read())
     with open("accounts.json", "w+") as terraform_tfvars:
         terraform_tfvars.write(template.render(config_data))
-    
+
     print("Terraform config successfully created")
 
 
