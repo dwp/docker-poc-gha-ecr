@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build Docker image
-        run: docker build -t ${{ env.IMAGE_NAME }}:latest .
+        run: cd build ; docker build -t ${{ env.IMAGE_NAME }}:latest .
 
   test:
     runs-on: ubuntu-latest
