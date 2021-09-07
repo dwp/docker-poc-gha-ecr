@@ -3,7 +3,6 @@
 set -euo pipefail
 
 # Build the image
-cd build
 docker build -t "$IMAGE_NAME" .
 
 # Dev First
