@@ -40,7 +40,7 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
-              cp terraform.tf ../terraform-bootstrap
+              cp terraform.tf accounts.json ../terraform-bootstrap
           dir: docker-poc-gha-ecr
         inputs:
           - name: docker-poc-gha-ecr
@@ -64,7 +64,7 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-bootstrap/accounts.json .
               ./get_ecr_sts_credentials.sh 
               cp gha_ecr_sts_creds ../gha_ecr_sts_creds
           dir: docker-poc-gha-ecr
@@ -124,3 +124,24 @@ meta:
       params:
         DETAILED_EXITCODE: -detailed-exitcode
         TF_VAR_github_token: ((dataworks-secrets.concourse_github_pat))
+    trigger-gha-workflow:
+      task: trigger-gha-workflow
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((dataworks.docker_awscli_repository))
+            version: ((dataworks.docker_awscli_version))
+            tag: ((dataworks.docker_awscli_version))
+        run:
+          path: sh
+          args:
+            - -ec
+            - |
+              curl -X POST -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/dwp/docker-poc-gha-ecr/actions/workflows/main.yml/dispatches \
+              -d '{"ref": "master"}' -u "$CONCOURSE_GITHUB_USERNAME:$GITHUB_TOKEN"
+        params:
+          CONCOURSE_GITHUB_USERNAME: ((dataworks.concourse_github_username))
+          GITHUB_TOKEN: ((dataworks-secrets.concourse_github_pat))

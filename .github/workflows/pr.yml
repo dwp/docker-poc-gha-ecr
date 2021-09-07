@@ -7,7 +7,7 @@ on:
       - '**/*.md'
 
 env:
-  IMAGE_NAME: dwpdigital/docker-poc-gha-ecr
+  IMAGE_NAME: docker-poc-gha-ecr
 
 jobs:
   docker-build-and-scan:
@@ -16,13 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build Docker image
         run: docker build -t ${{ env.IMAGE_NAME }}:latest .
-      - name: Run Snyk to check image for high vulnerabilities
-        uses: snyk/actions/docker@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          image: ${{ env.IMAGE_NAME }}
-          args: --file=Dockerfile --policy-path=./.snyk --severity-threshold=high --exclude-base-image-vulns --org=dwp-dataworks
+        working-directory: build
 
   test:
     runs-on: ubuntu-latest
