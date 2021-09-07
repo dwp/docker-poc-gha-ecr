@@ -12,9 +12,9 @@ DEV_MGMT_ACCOUNT="$(jq -r '.management-dev' < accounts.json)"
 ROLE_ARN="arn:aws:iam::$DEV_MGMT_ACCOUNT:role/gha_ecr"
 AWS_STS="$(aws sts assume-role --role-arn "$ROLE_ARN" --role-session-name "dev-ci-$(date +%m%d%y%H%M%S)" --duration-seconds ${DURATION})"
 
-DEV_SECRET_ACCESS_KEY="$(echo "$AWS_STS" | jq .Credentials.SecretAccessKey -r)"
-DEV_ACCESS_KEY_ID="$(echo "$AWS_STS" | jq .Credentials.AccessKeyId -r)"
-DEV_SESSION_TOKEN="$(echo "$AWS_STS" | jq .Credentials.SessionToken -r)"
+DEV_SECRET_ACCESS_KEY="$(echo "$AWS_STS" | jq '.Credentials.SecretAccessKey' -r)"
+DEV_ACCESS_KEY_ID="$(echo "$AWS_STS" | jq '.Credentials.AccessKeyId' -r)"
+DEV_SESSION_TOKEN="$(echo "$AWS_STS" | jq '.Credentials.SessionToken' -r)"
 
 ## Generate Live Management Credentials
 MGMT_ACCOUNT="$(jq -r .management < accounts.json)"
