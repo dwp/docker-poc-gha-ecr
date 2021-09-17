@@ -137,10 +137,6 @@ meta:
             - -exc
             - |
               cp ../terraform-bootstrap/terraform.tf .
-              echo "Loading STS creds with shell debug disabled"
-              set +x
-              source ../gha_ecr_sts_creds/gha_ecr_sts_creds
-              set -x
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -152,6 +148,31 @@ meta:
           - name: gha_ecr_sts_creds
         params:
           TF_VAR_github_token: ((dataworks-secrets.concourse_github_pat))
+    terraform-plan-githubconfig:
+      task: terraform-plan-githubconfig
+      .: (( inject meta.plan.terraform-common-config ))
+      config:
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cp ../terraform-bootstrap/terraform.tf .
+              echo "Loading STS creds with shell debug disabled"
+              set +x
+              source ../gha_ecr_sts_creds/gha_ecr_sts_creds
+              set -x
+              terraform workspace show
+              terraform init
+              terraform plan $DETAILED_EXITCODE
+          dir: dataworks-github-config
+        inputs:
+          - name: dataworks-github-config
+          - name: terraform-bootstrap-githubconfig
+          - name: gha_ecr_sts_creds
+      params:
+        DETAILED_EXITCODE: -detailed-exitcode
+        TF_VAR_github_token: ((dataworks-secrets.concourse_github_pat))
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))

@@ -23,21 +23,3 @@ variable "github_organization" {
 variable "github_token" {
   type = string
 }
-
-variable "dev_gha_ecr_sts_creds" {
-  type = object({
-    access_key_id     = string
-    secret_access_key = string
-    session_token     = string
-    aws_account       = string
-  })
-}
-
-variable "gha_ecr_sts_creds" {
-  type = object({
-    access_key_id     = string
-    secret_access_key = string
-    session_token     = string
-    aws_account       = string
-  })
-}
