@@ -15,6 +15,7 @@ jobs:
       - .: (( inject meta.plan.terraform-apply ))
         params:
           TF_WORKSPACE: "management"
+      - .: (( inject meta.plan.terraform-plan-githubconfig ))
       - .: (( inject meta.plan.terraform-plan ))
         params:
           TF_WORKSPACE: "management"
