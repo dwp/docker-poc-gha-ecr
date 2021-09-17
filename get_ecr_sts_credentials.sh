@@ -31,13 +31,13 @@ export TF_VAR_gha_dev_ecr="{
   access_key_id=\"$DEV_ACCESS_KEY_ID\"
   secret_access_key=\"$DEV_SECRET_ACCESS_KEY\"
   session_token=\"$DEV_SESSION_TOKEN\"
-  aws_account=\"$DEV_MGMT_ACCOUNT\"
+  account=\"$DEV_MGMT_ACCOUNT\"
 }"
 
 export TF_VAR_gha_ecr="{
   access_key_id=\"$ACCESS_KEY_ID\"
   secret_access_key=\"$SECRET_ACCESS_KEY\"
   session_token=\"$SESSION_TOKEN\"
-  aws_account=\"$MGMT_ACCOUNT\"
+  account=\"$MGMT_ACCOUNT\"
 }"
 EOT
