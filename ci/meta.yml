@@ -22,6 +22,34 @@ meta:
           TF_CLI_ARGS_apply: -lock-timeout=300s
           TF_CLI_ARGS_plan: -lock-timeout=300s
           TF_VAR_costcode: ((dataworks.costcode))
+    terraform-bootstrap-githubconfig:
+      task: terraform-bootstrap-githubconfig
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: dwpdigital/jinja-yaml-aws
+            version: 0.0.19
+            tag: 0.0.19
+        params:
+          AWS_REGION: ((dataworks.aws_region))
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              python bootstrap_terraform.py
+              cp terraform.tf ../terraform-bootstrap-githubconfig
+              cp terraform.tfvars ../terraform-bootstrap-githubconfig
+          dir: dataworks-github-config
+        inputs:
+          - name: dataworks-github-config
+        outputs:
+          - name: terraform-bootstrap-githubconfig
+        params:
+          AWS_REGION: eu-west-2
+          AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
     terraform-bootstrap:
       task: terraform-bootstrap
       config:
@@ -74,6 +102,31 @@ meta:
         outputs:
           - name: gha_ecr_sts_creds
 
+    terraform-apply-githubconfig:
+      task: terraform-apply-githubconfig
+      .: (( inject meta.plan.terraform-common-config ))
+      config:
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              cp ../terraform-bootstrap-githubconfig/* .
+              echo "Loading STS creds with shell debug disabled"
+              set +x
+              source ../gha_ecr_sts_creds/gha_ecr_sts_creds
+              set -x
+              terraform workspace show
+              terraform init
+              terraform plan -target github_actions_secret.dev_ecr_temp_access_key_id -target github_actions_secret.dev_ecr_temp_access_secret_key -target github_actions_secret.dev_ecr_temp_access_session_token -target github_actions_secret.dev_aws_account -target github_actions_secret.ecr_temp_access_key_id -target github_actions_secret.ecr_temp_access_secret_key -target github_actions_secret.ecr_temp_access_session_token -target github_actions_secret.aws_account -out terraform.plan
+              terraform apply -auto-approve terraform.plan
+          dir: dataworks-github-config
+        inputs:
+          - name: dataworks-github-config
+          - name: terraform-bootstrap-githubconfig
+          - name: gha_ecr_sts_creds
+        params:
+          TF_VAR_github_token: ((dataworks-secrets.concourse_github_pat))
     terraform-apply:
       task: terraform-apply
       .: (( inject meta.plan.terraform-common-config ))
