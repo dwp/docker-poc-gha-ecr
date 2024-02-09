@@ -200,7 +200,7 @@ meta:
               source ../gha_ecr_sts_creds/gha_ecr_sts_creds
               set -x
               terraform workspace show
-              terraform init
+              terraform init --upgrade
               terraform plan $DETAILED_EXITCODE
           dir: docker-poc-gha-ecr
         inputs:
